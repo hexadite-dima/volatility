@@ -209,7 +209,7 @@ class ConfObject(object):
     def set_help_hook(self, cb):
         self.optparser.help_hooks = [cb]
 
-    def parse_options(self, final = True):
+    def parse_options(self, final = True, args = sys.argv[1:]):
         """ Parses the options from command line and any conf files
         currently added.
 
@@ -221,7 +221,7 @@ class ConfObject(object):
 
         ## Parse the command line options:
         try:
-            (opts, args) = self.optparser.parse_args()
+            (opts, args) = self.optparser.parse_args(args = args)
 
             self.opts.clear()
 
