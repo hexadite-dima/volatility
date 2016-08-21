@@ -21,7 +21,6 @@
 import fcntl
 import ctypes
 import struct
-import volatility.addrspace as addrspace
 import volatility.plugins.addrspaces.standard as standard
 
 
@@ -39,20 +38,15 @@ class dk_memdev_info_t(ctypes.Structure):
 
 class KmemAddressSpace(standard.FileAddressSpace):
     # right after FileAddressSpace
-    order = 101
+    order = 99
 
     def __init__(self, base, config, layered = False, **kwargs):
-        # yes, I to copy these three lines from FileAddressSpace
-        addrspace.BaseAddressSpace.__init__(self, base, config, **kwargs)
-        self.as_assert(base == None or layered, 'Must be first Address Space')
+        standard.FileAddressSpace.__init__(self, base, config, layered = layered, **kwargs)
 
-        self.fname = '/dev/kmem'
-        self.fhandle = open(self.fname, 'rb')
         try:
             buf = ctypes.create_string_buffer(ctypes.sizeof(dk_memdev_info_t))
             fcntl.ioctl(self.fhandle.fileno(), DKIOCGETMEMDEVINFO, buf, True)
 	    self.fsize = ctypes.cast(buf, ctypes.POINTER(dk_memdev_info_t)).contents.mi_size
-            self._long_struct = struct.Struct("=I")
         except Exception:
-            # we don't want to choke Volatility with EMFILE
             self.fhandle.close()
+            raise
