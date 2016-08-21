@@ -45,7 +45,6 @@ class KmemAddressSpace(standard.FileAddressSpace):
         # yes, I to copy these three lines from FileAddressSpace
         addrspace.BaseAddressSpace.__init__(self, base, config, **kwargs)
         self.as_assert(base == None or layered, 'Must be first Address Space')
-        print base,layered, kwargs
 
         self.fname = '/dev/kmem'
         self.fhandle = open(self.fname, 'rb')
