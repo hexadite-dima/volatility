@@ -21,7 +21,6 @@
 
 """ General debugging framework """
 import pdb
-import sys
 import inspect
 import logging
 import volatility.conf
@@ -55,13 +54,24 @@ def warning(msg):
     """Logs a message at the WARNING level"""
     log(msg, logging.WARNING)
 
+class VolatilityError:
+    """A custom exception that does not get caught by except Exception"""
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__.__name__, repr(self.msg))
+
 def error(msg):
     log(msg, logging.ERROR)
-    sys.exit(1)
+    raise VolatilityError(msg)
 
 def critical(msg):
     log(msg, logging.CRITICAL)
-    sys.exit(1)
+    raise VolatilityError(msg)
 
 def log(msg, level):
     modname = "volatility.py"
